@@ -1,0 +1,249 @@
+#:kivy 1.8.0
+
+FloatLayout:
+    canvas:
+        Color:
+            rgba: 1, 0, 0, 1
+
+<ChemistryIsFunGame>:        
+    Label:
+        font_size: 70  
+        center_x: root.width * 0.9
+        top: root.top * 0.9
+        text: str(self.parent.Score)
+    
+#    Flask:
+#        center: self.parent.center
+#        id: flask1
+
+<Arrow>:
+    canvas:
+        Color:
+            rgba: 1, 0, 0, 1
+
+        Line:
+            points: self.start_x, self.start_y, self.end_x, self.end_y
+
+        Line:
+            points: self.start_x, self.start_y, self.start_x + self.hor_line, self.start_y
+
+    Label:
+        center_x: self.parent.start_x + self.parent.hor_line / 2
+        center_y: self.parent.start_y + self.parent.text_tab
+        color: 1, 0.75, 0, 1
+        text: self.parent.text
+        halign: "center"
+        font_size: 24
+        markup: True
+
+
+<Tutor>:
+    canvas:
+        Color:
+            rgba: 0, 0, 0.32, 1
+
+        Ellipse:
+            pos: self.x_left, self.y_left
+            size: self.wnd_width, self.wnd_height
+
+        Color:
+            rgba: 0, 0, 0.32, 1
+
+        Ellipse:
+            pos: self.x_left + self.wnd_width / 4, self.y_left + self.wnd_height * 1.05
+            size: self.wnd_width * 0.5, self.wnd_height * 0.2
+
+
+    Label:
+        center_x: self.parent.x_left + self.parent.wnd_width / 2
+        center_y: self.parent.y_left + self.parent.wnd_height / 2
+        color: 1, 0.75, 0, 1
+        text: self.parent.text
+        halign: self.parent.halign
+        font_size: 24
+        markup: True
+
+    Label:
+        center_x: self.parent.x_left + self.parent.wnd_width / 2
+        center_y: self.parent.y_left + self.parent.wnd_height * 1.15
+        color: 1, 0.75, 0, 1
+        text: "Skip"
+        halign: self.parent.halign
+        font_size: 24
+
+
+<Flask>:    
+
+    canvas:
+
+        Translate:
+            xyz: self.center_x, self.center_y, 0
+
+        Rotate: 
+            angle: self.angle
+            axis: 0, 0, 1
+
+        Translate:
+            xyz: -self.center_x, -self.center_y, 0
+    
+        Color:
+            rgba: self.liquid_color[0], self.liquid_color[1], self.liquid_color[2], 1
+
+        Ellipse:
+            pos: self.center_x - 0.2 * self.sz, self.center_y
+            size: self.sz * 0.4, self.sz * 0.35
+
+        Ellipse:
+            pos: self.center_x - 0.26 * self.sz, self.center_y
+            size: self.sz * 0.4, self.sz * 0.35
+
+        Ellipse:
+            pos: self.center_x - 0.14 * self.sz, self.center_y
+            size: self.sz * 0.4, self.sz * 0.35
+
+        Color:
+            rgba: 0.7, 0.7, 0.7, 1
+
+        Line:
+		    # bottom left	
+            bezier: self.center_x - self.sz * 0.2, self.center_y, self.center_x - self.sz * 0.4, self.center_y + self.sz * 0.2, self.center_x - self.sz * 0.1, self.center_y + self.sz * 0.4 
+
+        Line:
+		    # bottom right
+            bezier: self.center_x + self.sz * 0.2, self.center_y, self.center_x + self.sz * 0.4, self.center_y + self.sz * 0.2, self.center_x + self.sz * 0.1, self.center_y + self.sz * 0.4 
+
+        Line:            
+		    # top right
+            bezier: self.center_x + self.sz * 0.1, self.center_y + self.sz * 0.4, self.center_x, self.center_y + self.sz * 0.99, self.center_x + self.sz * 0.05, self.center_y + self.sz * 1.0
+
+        Line:
+            # top left
+            bezier: self.center_x - self.sz * 0.1, self.center_y + self.sz * 0.4, self.center_x, self.center_y + self.sz * 0.99, self.center_x - self.sz * 0.05, self.center_y + self.sz * 1.0 
+
+        Line:
+            # bottom
+            points: self.center_x - self.sz * 0.2, self.center_y, self.center_x + self.sz * 0.2, self.center_y
+
+        Line:
+            # top
+            points: self.center_x - self.sz * 0.05, self.center_y + self.sz * 1.0, self.center_x + self.sz * 0.05, self.center_y + self.sz * 1.0
+
+        Translate:
+            xyz: self.center_x, self.center_y, 0
+
+        Rotate: 
+            angle: -self.angle
+            axis: 0, 0, 1
+
+        Translate:
+            xyz: -self.center_x, -self.center_y, 0
+
+    Label:
+        center_x: self.parent.center_x
+        center_y: self.parent.center_y + self.parent.sz * 0.2
+        font_size: 24
+        color: 1, 0.31, 0, 1
+        text: self.parent.liquid_name
+        markup: True
+
+<Conveyor>:
+    canvas:
+        Color:
+            rgba: 0.7, 0.7, 0.7, 1
+        Rectangle:
+            pos: self.left_corner_x, self.bottom_height
+            size: 1000, self.bottom_height * 0.5
+
+<Wheel>:
+    canvas:
+        Color:
+            rgba: 0.7, 0.7, 0.7, 1
+
+        Line:
+            circle: self.left_corner_x + self.bottom_height * 0.5, self.bottom_height * 0.5, self.bottom_height * 0.5
+
+        Translate:
+            xyz: self.left_corner_x + self.bottom_height * 0.5, self.bottom_height * 0.5, 0
+
+        Rotate:
+            axis: 0, 0, 1
+            angle: self.angle
+
+        Line:
+            points: 0, 0, self.v.x, self.v.y
+
+        Rotate:
+            axis: 0, 0, 1
+            angle: 60
+
+        Line:
+            points: 0, 0, self.v.x, self.v.y
+
+        Rotate:
+            axis: 0, 0, 1
+            angle: 60
+
+        Line:
+            points: 0, 0, self.v.x, self.v.y
+
+        Rotate:
+            axis: 0, 0, 1
+            angle: 60
+
+        Line:
+            points: 0, 0, self.v.x, self.v.y
+
+        Rotate:
+            axis: 0, 0, 1
+            angle: 60
+
+        Line:
+            points: 0, 0, self.v.x, self.v.y
+
+        Rotate:
+            axis: 0, 0, 1
+            angle: 60
+
+        Line:
+            points: 0, 0, self.v.x, self.v.y
+
+        Rotate:
+            axis: 0, 0, 1
+            angle: 60
+
+        Rotate:
+            axis: 0, 0, 1
+            angle: -self.angle
+
+        Translate:
+            xyz: - (self.left_corner_x + self.bottom_height * 0.5), - self.bottom_height * 0.5, 0
+
+        Rectangle:
+            pos: self.left_corner_x, self.bottom_height
+            size: 1000, self.bottom_height * 0.5
+
+#        Line:
+#            circle: self.bottom_height * 0.5, self.bottom_height * 0.5, self.bottom_height * 0.5
+
+<Container>:
+    canvas:
+        Rectangle:
+            pos: self.pos
+            size: self.sz, self.sz
+#            texture: self.texture
+    Image:
+        source: 'wood.jpg'
+        pos: self.parent.pos
+        size: self.parent.sz, self.parent.sz
+
+<Mixer>:
+    canvas:
+#        Rectangle:
+#            pos: self.pos[0] - self.cyl_width / 2, self.pos[1]
+#            size: self.cyl_width, self.cyl_height
+        Color:
+            rgba: 0.7, 0.7, 0.7, 1
+#        Ellipse:
+#		    pos: self.pos
+#            size: 10, 10
+        
