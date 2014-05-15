@@ -58,4 +58,3 @@ Just send a message to malinovsky239@yandex.ru
 
 Also, I will be glad if you share with me
 bases created by yourself.
-

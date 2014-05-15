@@ -1,8 +1,8 @@
-1
+5
 Na2O MgO Al2O3 SiO2 SO2 SO3 CaO Li2O BeO P2O5
 
-1
+5
 Na Mg Al Ca Li Cu Be K Au
 
-1
+3
 NaOH Ba(OH)2 KOH LiOH Ca(OH)2

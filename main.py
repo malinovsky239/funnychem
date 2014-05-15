@@ -120,7 +120,13 @@ class Encyclopaedia:
             data = inp.readlines()
             self.max_level = len(data)
             for i in range(len(data)):
-                self.Goals.append(data[i])
+                line = data[i][0]
+                for j in range(1, len(data[i])):
+                    if data[i][j] == '\\':
+                        line += '\n';
+                    else:
+                        line += data[i][j];
+                self.Goals.append(line)
 
         with open(os.path.dirname(os.path.realpath(sys.argv[0])) + "\data\levels\\tutorials.txt", "r") as inp:        
             data = inp.readlines()
@@ -152,6 +158,7 @@ class Encyclopaedia:
 
         self.stage_requirements_cnt.append(len(self.Liquids))
         self.stage_requirements_subst.append(self.Liquids)
+        self.LiquidsByStage.append(self.Liquids)
 
 
 def sqr(a):
@@ -216,6 +223,7 @@ class Mixer(Widget):
     step = 0
 
     count = 0
+    cnt_products = 0
     chosen = []
     received = 0
     sentBack = 0
@@ -276,7 +284,8 @@ class Mixer(Widget):
     def react_part2(self, arg2):
         reagents = "+".join(sorted((self.chosen[0].liquid_name, self.chosen[1].liquid_name)))
         if reagents in Encyclopaedia.Reactions:
-            for new_liquid in Encyclopaedia.Reactions[reagents]:
+            self.cnt_products = 0
+            for new_liquid in Encyclopaedia.Reactions[reagents]:                
                 if new_liquid not in game.received:
                     game.received.append(new_liquid)
                     game.adjust_score(9)
@@ -286,6 +295,7 @@ class Mixer(Widget):
                 if game.tutor.user_guide_stage == 5:
                     game.tutor.user_guide_stage += 1
                 game.Flasks = game.Flasks[-1:] + game.Flasks[:-1]
+                self.cnt_products += 1
         else:
             game.adjust_score(-3)
         self.step = 0
@@ -309,9 +319,7 @@ class Mixer(Widget):
         self.chosen = []
         self.state = 0
         game.mix_on = "Mixing mode: Off"
-
-        if game.tutor.game_stage > 0:
-            game.tutor.check_stage_completion()
+        game.tutor.check_stage_completion()
 
 
 class Tutor(Widget):
@@ -331,7 +339,7 @@ class Tutor(Widget):
     arrow_added = False
 
     user_guide_stage = -2
-    max_user_guide_stage = 13
+    max_user_guide_stage = 16
 
     iterations = 0
 
@@ -366,7 +374,7 @@ class Tutor(Widget):
             game.remove_widget(game.arrow)           
             self.wnd_width = Window.width * 0.95
             self.x_left = Window.width * 0.05
-            self.check_stage_completion() 
+            self.congratulations()
             self.user_guide_stage = 100
             return   
 
@@ -442,7 +450,7 @@ class Tutor(Widget):
             game.ScoreColorGreen = 1
             game.ScoreColorBlue = 1
             if self.last_sheduled < self.user_guide_stage:
-                Clock.schedule_once(self.user_guide_inc, 1.0)
+                Clock.schedule_once(self.user_guide_inc, 2.0)
                 self.last_sheduled = self.user_guide_stage
 
         if self.user_guide_stage == 10:
@@ -451,7 +459,6 @@ class Tutor(Widget):
                 for cont in game.Containers:
                     if cont.containFlask != None and cont.containFlask.liquid_name == "HCl":    
                         center = cont.center_x, cont.center_y
-                        game.arrow.indicate(cont.center_x, cont.center_y)        
                         cont.containFlask.go_to(game.mixer, game.mixer.center_x - game.mixer.sz * 0.75 + game.mixer.sz * 1.5 * game.mixer.count, game.mixer.center_y - game.mixer.sz * 0.4, Window.height * 0.015, float("inf"))
                         cont.containFlask.returnDestination = center[0], center[1] - cont.sz * 0.3
                         cont.containFlask.returnTo = cont        
@@ -471,9 +478,17 @@ class Tutor(Widget):
                         cont.containFlask = None				
                         break
                 self.last_sheduled = 10
+            if len(game.FlyingFlasks) > 0:
+                game.arrow.indicate(game.FlyingFlasks[0].center_x, game.FlyingFlasks[0].center_y)        
 
         if self.user_guide_stage == 11:
-            game.arrow.text = "If you mix two substances\nthat you already have mixed,\nyou will score 3 points. Just watch"
+            game.arrow.text = "If you mix two substances\nthat you have already mixed,\nyou will score 3 points. Just watch"
+            if self.last_sheduled < self.user_guide_stage:               
+                Clock.schedule_once(self.user_guide_inc, 3.0)
+            self.last_sheduled = 11
+            game.arrow.indicate(game.mixer.center_x, game.mixer.center_y)        
+
+        if self.user_guide_stage == 12:
             if self.last_sheduled < self.user_guide_stage:                
                 for cont in game.Containers:
                     if cont.containFlask != None and cont.containFlask.liquid_name != "HCl":    
@@ -497,10 +512,18 @@ class Tutor(Widget):
                         game.FlyingFlasks.append(cont.containFlask)
                         cont.containFlask = None				
                         break
-                self.last_sheduled = 11
+                self.last_sheduled = 12
+            if len(game.FlyingFlasks) > 0:
+                game.arrow.indicate(game.FlyingFlasks[0].center_x, game.FlyingFlasks[0].center_y)        
 
-        if self.user_guide_stage == 12:
+        if self.user_guide_stage == 13:
             game.arrow.text = "If you place the flask on the shelf\nthat already contains one\nyou will lose 1 point and 1 flask (previously contained there)"
+            if self.last_sheduled < self.user_guide_stage:               
+                Clock.schedule_once(self.user_guide_inc, 3.0)
+            self.last_sheduled = 13
+            game.arrow.indicate(game.mixer.center_x, game.mixer.center_y)        
+
+        if self.user_guide_stage == 14:
             if self.last_sheduled < self.user_guide_stage:                
                 for cont in game.Containers:
                     if cont.containFlask != None:    
@@ -511,14 +534,21 @@ class Tutor(Widget):
                         game.FlyingFlasks.append(game.Flasks[0])
                         del game.Flasks[0]
                     break
-                self.last_sheduled = 12
-                
+                self.last_sheduled = 14
+            if len(game.FlyingFlasks) > 0:
+                game.arrow.indicate(game.FlyingFlasks[0].center_x, game.FlyingFlasks[0].center_y)        
 
-        Clock.schedule_once(self.user_guide, 1.0 / game.FPS)
+        if self.user_guide_stage == 15:
+            game.arrow.indicate(game.arrow.start_x, game.arrow.start_y)        
+            game.arrow.text = "Just a reminder:\nif you obtain completely new substance\nyou receive not 3 but 9 points!"
+            if self.last_sheduled < self.user_guide_stage:                
+                Clock.schedule_once(self.user_guide_inc, 3.0)
+                self.last_sheduled = 15
+
+        Clock.schedule_once(self.user_guide, 2.0 / game.FPS)
 
     def user_guide_inc(self, second):
-        self.user_guide_stage += 1
-        print self.user_guide_stage
+        self.user_guide_stage += 1        
 
     def check_stage_completion(self):
         if self.game_stage < 0:
@@ -533,7 +563,7 @@ class Tutor(Widget):
         game.progress_bar.needed_lvl = game.enc.stage_requirements_cnt[self.game_stage]
         game.progress_bar.progress = str(game.progress_bar.completed_lvl) + "/" + str(game.progress_bar.needed_lvl)        
         
-        if cnt >= game.enc.stage_requirements_cnt[self.game_stage]:
+        if cnt >= game.enc.stage_requirements_cnt[self.game_stage] and game.tutor.game_stage > 0:
             self.congratulations()
         
     def congratulations(self):
@@ -543,7 +573,7 @@ class Tutor(Widget):
         self.state = "congratulations"
         self.shown = True
         game.add_widget(self)
-        self.text = "Congratulations!!!\nYou have passed level " + str(self.game_stage)
+        self.text = "Congratulations!!!\nYou have passed level " + str(self.game_stage - 1)
         if self.game_stage <= game.max_level:
             self.next_button_text = "Read theory background\nfor the next stage"
         else:
@@ -558,7 +588,7 @@ class Tutor(Widget):
             self.text = game.enc.Tutorial[self.game_stage]	    
         else:
             self.text_size = 16
-            self.text = "You have passed all levels.\nFeel free to add your owns.\nJust consult [i]readme.txt[/i] to know how to do it.\nOr you may\ncontinue playing as long as you want\nand try to get all possible substances!"	                
+            self.text = "You have passed all levels.\nFeel free to add your owns.\nJust consult [i]readme.txt[/i] to know how to do it.\nOr you may continue playing\nas long as you want and try \nto get all possible substances!\n\nYou have already obtained " + str(len(game.received)) + " different items."	                
 
     def next_stage(self):
         self.halign = "center"
@@ -568,7 +598,6 @@ class Tutor(Widget):
         self.text = game.enc.Goals[self.game_stage]	    
         game.progress_bar.completed_lvl = 0
         game.progress_bar.needed_lvl = game.enc.stage_requirements_cnt[self.game_stage]
-        print game.progress_bar.needed_lvl
         game.progress_bar.progress = str(game.progress_bar.completed_lvl) + "/" + str(game.progress_bar.needed_lvl)
 
 
@@ -593,6 +622,9 @@ class Tutor(Widget):
                     self.hide()
                     self.state = ""
                     game.start_stop()
+                    game.progress_bar.completed_lvl = len(game.received)
+                    game.progress_bar.needed_lvl = game.enc.stage_requirements_cnt[self.game_stage]
+                    game.progress_bar.progress = str(game.progress_bar.completed_lvl) + "/" + str(game.progress_bar.needed_lvl)
             elif self.state == "next stage":
                 self.hide()
                 self.state = ""
@@ -611,6 +643,7 @@ class Tutor(Widget):
         self.text = ""
         self.halign = "center"
         Clock.schedule_once(self.intro, 0.01)
+
 
 class ChemistryWithFunGame(Widget):
 
@@ -646,6 +679,9 @@ class ChemistryWithFunGame(Widget):
 
     max_level = 0
 
+    def myrandom(self, s):
+        return (hash(s) % 256) / 255
+
     def __init__(self, **kwargs):
         super(ChemistryWithFunGame, self).__init__(**kwargs)            
 
@@ -657,6 +693,8 @@ class ChemistryWithFunGame(Widget):
         self.enc = Encyclopaedia()
         self.enc.init()
         self.max_level = self.enc.max_level
+
+        self.mixer = Mixer()
 
         self.FPS = 120
 
@@ -678,8 +716,6 @@ class ChemistryWithFunGame(Widget):
 
         Flask.flask_velocity /= 1.5
         self.fly_upwards()
-
-        self.mixer = Mixer()
         
         self.progress_bar = MyProgressBar()        
         self.progress_bar.completed_lvl = 0
@@ -699,12 +735,12 @@ class ChemistryWithFunGame(Widget):
 
 
     def fly_upwards(self):
-        for fl in self.Flasks:
+        for fl in self.Flasks[self.mixer.cnt_products:]:
             self.remove_widget(fl)
             self.add_widget(fl)
             self.FlyingFlasks.append(fl)
-            fl.go_to(None, fl.center_x, Window.height * 1.25, Window.height * 0.02, Window.height * 0.05)
-        self.Flasks = []
+            fl.go_to(None, fl.center_x, Window.height * 1.25, Window.height * 0.02, Window.height * 0.05)        
+        self.Flasks = self.Flasks[:self.mixer.cnt_products]
 
 
     def start_stop(self):
@@ -749,9 +785,9 @@ class ChemistryWithFunGame(Widget):
             new_flask.color_green = self.enc.Colors[new_flask.liquid_name][1]
             new_flask.color_blue = self.enc.Colors[new_flask.liquid_name][2]
         else:
-            new_flask.color_red = random()
-            new_flask.color_green = random()
-            new_flask.color_blue = random()
+            new_flask.color_red = self.myrandom(new_flask.liquid_name)
+            new_flask.color_green = self.myrandom(new_flask.liquid_name)
+            new_flask.color_blue = self.myrandom(new_flask.liquid_name)
         new_flask.pos[0] = - Flask.sz * 0.75
         new_flask.center_y = Window.height * 0.15    
         new_flask.velocity_x = Flask.flask_velocity
@@ -769,11 +805,11 @@ class ChemistryWithFunGame(Widget):
             new_flask.color_green = self.enc.Colors[new_flask.liquid_name][1]
             new_flask.color_blue = self.enc.Colors[new_flask.liquid_name][2]
         else:
-            new_flask.color_red = random()
-            new_flask.color_green = random()
-            new_flask.color_blue = random()
-        new_flask.center_x = self.mixer.center_x
-        new_flask.center_y = self.mixer.center_y - self.mixer.sz * 0.5
+            new_flask.color_red = self.myrandom(new_flask.liquid_name)
+            new_flask.color_green = self.myrandom(new_flask.liquid_name)
+            new_flask.color_blue = self.myrandom(new_flask.liquid_name)
+        new_flask.center_x = self.mixer.center_x + self.mixer.sz * 0.25 * self.mixer.cnt_products
+        new_flask.center_y = self.mixer.center_y - self.mixer.sz * 0.5 + self.mixer.sz * 0.25 * self.mixer.cnt_products
         new_flask.velocity_x = 0
         new_flask.velocity_y = 0
         self.Flasks.append(new_flask)        
@@ -833,7 +869,7 @@ class ChemistryWithFunGame(Widget):
                             self.mixer.react()
                     continue
 
-                if 10 <= game.tutor.user_guide_stage <= 12 and len(self.FlyingFlasks) == 1:
+                if 10 <= game.tutor.user_guide_stage <= 14 and len(self.FlyingFlasks) == 1:
                     Clock.schedule_once(game.tutor.user_guide_inc, 0.1)                                      
 
                 if game.tutor.user_guide_stage == 6 and self.FlyingFlasks[i].liquid_name == "HCl":
@@ -844,9 +880,6 @@ class ChemistryWithFunGame(Widget):
                         if cont.containFlask != None and cont != toContainer:
                             game.tutor.user_guide_stage = 3
                             break
-
-#                if game.tutor.user_guide_stage == 1:
-#                    game.tutor.user_guide_stage = 2
                     
                 if toContainer.containFlask != None:                    
                     self.adjust_score(-1)
@@ -866,12 +899,19 @@ class ChemistryWithFunGame(Widget):
                     game.AvailableFlasks.append(self.FlyingFlasks[i])
                     del self.FlyingFlasks[i]     
 
+        self.rotate_conveyor()
+
         self.secs += 1.0 / self.FPS
+
+        if 3 <= self.tutor.user_guide_stage < 20:
+            return
+        if len(self.Flasks) == 0 and len(self.FlyingFlasks) == 0:
+            self.secs = 0
+            self.flask_entrance()
+            return
         if self.secs >= self.FlasksPerSec * (Flask.sz / Flask.flask_velocity) / self.FPS and ((not 0 <= self.tutor.user_guide_stage < 2) or len(self.Flasks) == 0):
             self.secs = 0
             self.flask_entrance()
-
-        self.rotate_conveyor()
 
 class ChemistryWithFunApp(App):    
     def build(self):

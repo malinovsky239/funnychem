@@ -100,23 +100,23 @@ Li3(PO4) H2O
 
 Na
 H2O
-Na2OH H2
+NaOH H2
 
 Ba
 H2O
-Ba2OH H2  
+Ba(OH)2 H2  
 
 K
 H2O
-K2OH H2  
+KOH H2  
 
 Li
 H2O
-Li2OH H2  
+LiOH H2  
 
 Ca
 H2O
-Ca2OH H2
+Ca(OH)2 H2
 
 Mg
 H2O
