@@ -1,0 +1,135 @@
+Na
+O2
+Na2O
+
+Mg
+O2
+MgO
+
+Al
+O2
+Al2O3
+
+O2
+S
+SO2
+
+O2
+SO2
+SO3
+
+O2
+Si
+SiO2
+
+Be
+O2
+BeO
+
+Ca
+O2
+CaO
+
+O2
+P4
+P2O5
+
+Li
+O2
+Li2O
+
+Cl2
+H2
+HCl
+
+Cl2
+Mg
+MgCl2
+
+Cl2
+Na
+NaCl
+
+H2
+O2
+H2O2
+
+P2O5
+H2O
+H3PO4
+
+Na2O
+H2
+Na H2O
+
+MgO
+H2
+Mg H2O
+
+Al2O3
+H2
+Al H2O
+
+LiO2
+H2
+Li H2O
+
+CaO
+H2
+Ca H2O
+
+BeO
+H2
+Be H2O
+
+P2O5
+H2O
+H3PO4
+
+NaOH
+P2O5
+Na3(PO4) H2O
+
+KOH
+P2O5
+K3(PO4) H2O
+
+LiOH
+P2O5
+Li3(PO4) H2O
+
+Na
+H2O
+Na2OH H2
+
+Ba
+H2O
+Ba2OH H2  
+
+K
+H2O
+K2OH H2  
+
+Li
+H2O
+Li2OH H2  
+
+Ca
+H2O
+Ca2OH H2
+
+Mg
+H2O
+MgO H2
+
+Al
+H2O
+Al2O3 H2
+
+H2
+Cl
+HCl
+
+H2
+S
+H2S  
