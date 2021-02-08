@@ -1,3 +1,9 @@
+*Demo video: https://www.youtube.com/watch?v=36Cv8hEXGtY*
+
+***
+
+*Description used for Kivy App Contest 2014:*
+
 Dear friend!
 
 Maybe, there are not so much
